@@ -75,6 +75,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="AGREGAR" />
+
+        <Button
+            android:id="@+id/button3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="IraModificar"
+            android:text="Ir a modificar" />
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

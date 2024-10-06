@@ -3,4 +3,12 @@
     <string name="edt_id_description">Campo de descripcion</string>
     <string name="edt_nombre_producto_description">Campo del nombre del producto</string>
     <string name="edt_stock_description">Campo del stock</string>
+
+    <!-- ACTIVITY MODIFICAR-->
+    <string name="id">ID</string>
+    <string name="btn_buscar">BUSCAR</string>
+    <string name="nombreProducto">NOMBRE PRODUCTO</string>
+    <string name="stock">STOCK</string>
+    <string name="categoria">CATEGORÍA</string>
+    <string name="modificar">MODIFICAR</string>
 </resources>

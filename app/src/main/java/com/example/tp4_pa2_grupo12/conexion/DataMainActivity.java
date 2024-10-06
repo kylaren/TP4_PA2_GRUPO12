@@ -4,6 +4,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.tp4_pa2_grupo12.conexion.DataDB;
 import com.example.tp4_pa2_grupo12.entidades.Articulo;
@@ -82,4 +84,8 @@ public class DataMainActivity {
             }
         });
     }
+
+
+
 }
+

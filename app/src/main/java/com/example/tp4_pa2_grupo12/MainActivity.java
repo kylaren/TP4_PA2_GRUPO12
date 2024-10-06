@@ -4,7 +4,9 @@ import com.example.tp4_pa2_grupo12.entidades.Articulo;
 import com.example.tp4_pa2_grupo12.entidades.Categoria;
 import com.example.tp4_pa2_grupo12.conexion.DataMainActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -61,5 +63,10 @@ public class MainActivity extends AppCompatActivity {
         edtNombreProducto.setText("");
         edtStock.setText("");
         spnCategoria.setSelection(0);
+    }
+
+    public void IraModificar(View view){
+        Intent i = new Intent(this, Modificacion.class);
+        startActivity(i);
     }
 }
