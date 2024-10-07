@@ -19,6 +19,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -29,9 +30,13 @@ public class DataMainActivity {
     private EditText txtNombreProducto, txtStock;
     private Button btnBuscar;
 
+    // Lista para almacenar los artículos
+    private List<Articulo> articulos;
+
     public DataMainActivity(Context context, Spinner spnCategoria) {
         this.context = context;
         this.spnCategoria = spnCategoria;
+        this.articulos = new ArrayList<>();
     }
 
     public DataMainActivity(Context context, EditText txtNombreProducto, EditText txtStock, Button btnBuscar) {
@@ -39,6 +44,7 @@ public class DataMainActivity {
         this.txtNombreProducto = txtNombreProducto;
         this.txtStock = txtStock;
         this.btnBuscar = btnBuscar;
+        this.articulos = new ArrayList<>();
     }
 
 
@@ -77,6 +83,16 @@ public class DataMainActivity {
 
     // agregar art
     public void agregarArticulo(Articulo articulo) {
+
+        // Verifica si el articulo ya existe en la base de datos
+        if (existeIdEnBD(articulo.getId())) {
+            Toast.makeText(context, "El artículo ya existe en la base de datos", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        //Agrega a la lista local antes de insert en la base de datos
+        articulos.add(articulo);
+
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
             try {
@@ -148,6 +164,30 @@ public class DataMainActivity {
                 Toast.makeText(context, "Ingrese un ID de artículo", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+
+
+    // Verifica si el ID existe en la base de datos
+    public boolean existeIdEnBD(int id) {
+        boolean exists = false;
+        try {
+            Class.forName(DataDB.driver);
+            Connection con = DriverManager.getConnection(DataDB.urlMySQL, DataDB.user, DataDB.pass);
+            String query = "SELECT COUNT(*) FROM articulo WHERE id = ?";
+            PreparedStatement ps = con.prepareStatement(query);
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                exists = rs.getInt(1) > 0;
+            }
+            rs.close();
+            ps.close();
+            con.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return exists;
     }
 }
 

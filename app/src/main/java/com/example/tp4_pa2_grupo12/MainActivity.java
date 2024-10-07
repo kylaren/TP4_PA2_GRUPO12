@@ -38,24 +38,78 @@ public class MainActivity extends AppCompatActivity {
         // agregar art y msj toast
         btnAgregar.setOnClickListener(view -> {
             try {
+                // Valida ID
+                String idText = edtId.getText().toString().trim();
+                if (idText.isEmpty()) {
+                    Toast.makeText(MainActivity.this, "El ID no puede estar vacío", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
-                int id = Integer.parseInt(edtId.getText().toString());
-                String nombre = edtNombreProducto.getText().toString();
-                int stock = Integer.parseInt(edtStock.getText().toString());
-                Categoria categoria = (Categoria) spnCategoria.getSelectedItem();
+                int id;
+                try {
+                    id = Integer.parseInt(idText);
+                } catch (NumberFormatException e) {
+                    Toast.makeText(MainActivity.this, "El ID debe ser un número entero", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
-                Articulo articulo = new Articulo(id, nombre, stock, categoria.getId());
+                // Verifica si el ID ya existe en segundo plano
+                new Thread(() -> {
+                    // verifica el ID en un hilo secundario
+                    boolean idExist = dataMainActivity.existeIdEnBD(id);
 
-                dataMainActivity.agregarArticulo(articulo);
+                    runOnUiThread(() -> {
+                        if (idExist) {
+                            Toast.makeText(MainActivity.this, "El ID ya existe. Por favor, ingrese uno nuevo.", Toast.LENGTH_SHORT).show();
+                        } else {
+                            // Valida que el nombre del producto sea de tipo texto y no contenga datos numéricos
+                            String nombre = edtNombreProducto.getText().toString().trim();
+                            if (nombre.isEmpty() || contieneNumeros(nombre)) {
+                                Toast.makeText(MainActivity.this, "El nombre del producto no puede estar vacío y no debe contener números.", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
 
-                Toast.makeText(MainActivity.this, "Agregado exitosamente", Toast.LENGTH_SHORT).show();
+                            // Valida que el stock solo acepte datos numéricos enteros y positivos
+                            String stockText = edtStock.getText().toString().trim();
+                            if (stockText.isEmpty()) {
+                                Toast.makeText(MainActivity.this, "El stock no puede estar vacío.", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
 
-                limpiarCampos();
+                            int stock;
+                            try {
+                                stock = Integer.parseInt(stockText);
+                                if (stock <= 0) {
+                                    Toast.makeText(MainActivity.this, "El stock debe ser un número entero positivo.", Toast.LENGTH_SHORT).show();
+                                    return;
+                                }
+                            } catch (NumberFormatException e) {
+                                Toast.makeText(MainActivity.this, "El stock debe ser un número entero positivo.", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
+                            // Obtengo la categoría seleccionada
+                            Categoria categoria = (Categoria) spnCategoria.getSelectedItem();
+                            if (categoria == null) {
+                                Toast.makeText(MainActivity.this, "Por favor, seleccione una categoría.", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
+                            // Crea el artículo y lo agrega usando el método de DataMainActivity
+                            Articulo articulo = new Articulo(id, nombre, stock, categoria.getId());
+                            dataMainActivity.agregarArticulo(articulo);
+
+                            Toast.makeText(MainActivity.this, "Agregado exitosamente", Toast.LENGTH_SHORT).show();
+                            limpiarCampos();
+                        }
+                    });
+                }).start();
 
             } catch (NumberFormatException e) {
                 Toast.makeText(MainActivity.this, "Por favor, complete todos los campos correctamente.", Toast.LENGTH_SHORT).show();
             }
         });
+
     }
 
     private void limpiarCampos() {
@@ -63,6 +117,11 @@ public class MainActivity extends AppCompatActivity {
         edtNombreProducto.setText("");
         edtStock.setText("");
         spnCategoria.setSelection(0);
+    }
+
+    // Método que verifica si un string contiene números
+    private boolean contieneNumeros(String str){
+        return str.matches(".*\\d.*");
     }
 
     public void IraModificar(View view){
