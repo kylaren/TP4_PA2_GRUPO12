@@ -39,12 +39,12 @@ public class DataMainActivity {
         this.articulos = new ArrayList<>();
     }
 
-    public DataMainActivity(Context context, EditText txtNombreProducto, EditText txtStock, Button btnBuscar) {
+    public DataMainActivity(Context context, EditText txtNombreProducto, EditText txtStock, Button btnBuscar, Spinner spnCategoria) {
         this.context = context;
         this.txtNombreProducto = txtNombreProducto;
         this.txtStock = txtStock;
         this.btnBuscar = btnBuscar;
-        this.articulos = new ArrayList<>();
+        this.spnCategoria = spnCategoria;
     }
 
 
@@ -117,6 +117,7 @@ public class DataMainActivity {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
             Articulo articulo = null;
+            Categoria categoria = null;
             try {
                 Class.forName(DataDB.driver);
                 Connection con = DriverManager.getConnection(DataDB.urlMySQL, DataDB.user, DataDB.pass);
@@ -130,17 +131,35 @@ public class DataMainActivity {
                     articulo.setId(rs.getInt("id"));
                     articulo.setNombre(rs.getString("nombre"));
                     articulo.setStock(rs.getInt("stock"));
+                    articulo.setIdCategoria(rs.getInt("idCategoria"));
                 }
-
                 rs.close();
                 ps.close();
+
+                if (articulo != null) {
+                    query = "SELECT * FROM categoria WHERE id = ?";
+                    ps = con.prepareStatement(query);
+                    ps.setInt(1, articulo.getIdCategoria());
+                    rs = ps.executeQuery();
+
+                    if (rs.next()) {
+                        categoria = new Categoria();
+                        categoria.setId(rs.getInt("id"));
+                        categoria.setDescripcion(rs.getString("descripcion"));
+                    }
+                    rs.close();
+                    ps.close();
+                }
+
                 con.close();
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
             // Actualiza la UI con los datos del artículo
             Articulo art = articulo;
+            Categoria cat = categoria;
             new android.os.Handler(android.os.Looper.getMainLooper()).post(() -> {
                 if (art != null) {
                     txtNombreProducto.setText(art.getNombre());
@@ -150,6 +169,12 @@ public class DataMainActivity {
                     txtStock.setText("");
                     Toast.makeText(context, "Artículo no encontrado", Toast.LENGTH_SHORT).show();
                 }
+
+                if (cat != null) {
+                    // Seleccionamos la categoría en el Spinner
+                    categoriaDelProducto(cat.getId());
+                }
+
             });
         });
     }
@@ -162,6 +187,47 @@ public class DataMainActivity {
                 buscarArticuloPorId(idArticulo);
             } else {
                 Toast.makeText(context, "Ingrese un ID de artículo", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void categoriaDelProducto(int idCategoria) {
+        for (int i = 0; i < spnCategoria.getCount(); i++) {
+            Categoria categoria = (Categoria) spnCategoria.getItemAtPosition(i);
+            if (categoria.getId() == idCategoria) {
+                spnCategoria.setSelection(i);
+                break;
+            }
+        }
+    }
+
+    public void modificarArticulo(int idArticulo, String nuevoNombre, int nuevoStock, int idCategoria) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
+            try {
+                Class.forName(DataDB.driver);
+                Connection con = DriverManager.getConnection(DataDB.urlMySQL, DataDB.user, DataDB.pass);
+
+                String query = "UPDATE articulo SET nombre = ?, stock = ?, idCategoria = ? WHERE id = ?";
+                PreparedStatement ps = con.prepareStatement(query);
+                ps.setString(1, nuevoNombre);
+                ps.setInt(2, nuevoStock);
+                ps.setInt(3, idCategoria);
+                ps.setInt(4, idArticulo);
+
+                int rowsUpdated = ps.executeUpdate();
+                ps.close();
+                con.close();
+
+                if (rowsUpdated > 0) {
+                    new android.os.Handler(android.os.Looper.getMainLooper()).post(() ->
+                            Toast.makeText(context, "Artículo modificado con éxito", Toast.LENGTH_SHORT).show());
+                } else {
+                    new android.os.Handler(android.os.Looper.getMainLooper()).post(() ->
+                            Toast.makeText(context, "Error al modificar el artículo", Toast.LENGTH_SHORT).show());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
     }

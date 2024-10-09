@@ -66,7 +66,12 @@ public class MainActivity extends AppCompatActivity {
                             // Valida que el nombre del producto sea de tipo texto y no contenga datos numéricos
                             String nombre = edtNombreProducto.getText().toString().trim();
                             if (nombre.isEmpty() || contieneNumeros(nombre)) {
-                                Toast.makeText(MainActivity.this, "El nombre del producto no puede estar vacío y no debe contener números.", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(MainActivity.this, "El nombre del producto no puede estar vacío.", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
+                            if (contieneNumeros(nombre)) {
+                                Toast.makeText(MainActivity.this, "El nombre del producto no debe contener números.", Toast.LENGTH_SHORT).show();
                                 return;
                             }
 
@@ -136,6 +141,7 @@ public class MainActivity extends AppCompatActivity {
         edtNombreProducto.setText("");
         edtStock.setText("");
         spnCategoria.setSelection(0);
+        edtId.requestFocus();
     }
 
     // Método que verifica si un string contiene números
