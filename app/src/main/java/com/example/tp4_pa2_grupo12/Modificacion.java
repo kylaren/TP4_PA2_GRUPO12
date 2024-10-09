@@ -2,22 +2,12 @@ package com.example.tp4_pa2_grupo12;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-<<<<<<< Updated upstream
-=======
 import android.widget.Spinner;
->>>>>>> Stashed changes
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.example.tp4_pa2_grupo12.conexion.DataMainActivity;
 import com.example.tp4_pa2_grupo12.entidades.Categoria;
@@ -25,82 +15,125 @@ import com.example.tp4_pa2_grupo12.entidades.Categoria;
 public class Modificacion extends AppCompatActivity {
 
     private EditText txtIdArticulo, txtNombreProducto, txtStock;
-<<<<<<< Updated upstream
-    private Button btnBuscar;
-    private Button btnAlta, btnModificacion, btnListado;
-
-=======
     private Button btnBuscar, btnModificar;
     private Spinner spnCategoria;
->>>>>>> Stashed changes
-     @Override
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_modificacion);
 
-         txtIdArticulo = findViewById(R.id.txt_id);
-         txtNombreProducto = findViewById(R.id.txt_nombreProducto);
-         txtStock = findViewById(R.id.txt_stock);
-         btnBuscar = findViewById(R.id.btnBuscar);
-         spnCategoria = findViewById(R.id.spinnerCategoria);
-         btnModificar = findViewById(R.id.btnModificar);
+        // UI components
+        txtIdArticulo = findViewById(R.id.txt_id);
+        txtNombreProducto = findViewById(R.id.txt_nombreProducto);
+        txtStock = findViewById(R.id.txt_stock);
+        spnCategoria = findViewById(R.id.spinnerCategoria);
+        btnBuscar = findViewById(R.id.btnBuscar);
+        btnModificar = findViewById(R.id.btnModificar);
 
+        // Data management object
+        DataMainActivity dataMainActivity = new DataMainActivity(this, txtNombreProducto, txtStock, btnBuscar, spnCategoria);
+        dataMainActivity.fetchCategorias();
 
+        // Search button click event
+        btnBuscar.setOnClickListener(v -> {
+            String idText = txtIdArticulo.getText().toString().trim();
 
-         DataMainActivity dataMainActivity = new DataMainActivity(this, txtNombreProducto, txtStock, btnBuscar, spnCategoria);
+            // Validar ID antes de buscar
+            if (idText.isEmpty()) {
+                Toast.makeText(Modificacion.this, "El ID no puede estar vacío", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            int id;
+            try {
+                id = Integer.parseInt(idText);
+            } catch (NumberFormatException e) {
+                Toast.makeText(Modificacion.this, "El ID debe ser un número entero", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
-         dataMainActivity.fetchCategorias();
-         dataMainActivity.buscarArticulo(txtIdArticulo);
-
-<<<<<<< Updated upstream
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
+            // Buscar el artículo
+            dataMainActivity.buscarArticulo(txtIdArticulo);
         });
 
-         btnAlta = findViewById(R.id.btnAlta);
-         btnModificacion = findViewById(R.id.btnModificacion);
-         btnListado = findViewById(R.id.btnListado);
+        // Modify button click event
+        btnModificar.setOnClickListener(v -> {
+            try {
+                // Validar el ID del artículo
+                String idText = txtIdArticulo.getText().toString().trim();
+                if (idText.isEmpty()) {
+                    Toast.makeText(Modificacion.this, "El ID no puede estar vacío", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
-         btnAlta.setOnClickListener(view -> {
+                int id;
+                try {
+                    id = Integer.parseInt(idText);
+                } catch (NumberFormatException e) {
+                    Toast.makeText(Modificacion.this, "El ID debe ser un número entero", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
-             Intent intent = new Intent(Modificacion.this, MainActivity.class);
-             startActivity(intent);
-         });
+                // Validar el nombre del producto
+                String nombre = txtNombreProducto.getText().toString().trim();
+                if (nombre.isEmpty()) {
+                    Toast.makeText(Modificacion.this, "El nombre del producto no puede estar vacío", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (contieneNumeros(nombre)) {
+                    Toast.makeText(Modificacion.this, "El nombre del producto no debe contener números", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
-         btnModificacion.setOnClickListener(view -> {
+                // Validar el stock
+                String stockText = txtStock.getText().toString().trim();
+                if (stockText.isEmpty()) {
+                    Toast.makeText(Modificacion.this, "El stock no puede estar vacío", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
-             Toast.makeText(this, "Ya estás en MODIFICACION", Toast.LENGTH_SHORT).show();
+                int stock;
+                try {
+                    stock = Integer.parseInt(stockText);
+                    if (stock <= 0) {
+                        Toast.makeText(Modificacion.this, "El stock debe ser un número entero positivo", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                } catch (NumberFormatException e) {
+                    Toast.makeText(Modificacion.this, "El stock debe ser un número entero positivo", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
-         });
+                // Validar la categoría seleccionada
+                Categoria categoria = (Categoria) spnCategoria.getSelectedItem();
+                if (categoria == null) {
+                    Toast.makeText(Modificacion.this, "Por favor, seleccione una categoría", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
-        btnListado.setOnClickListener(view -> {
-            Intent intent = new Intent(Modificacion.this, Listado.class);
-            startActivity(intent);
+                // Realizar la modificación
+                dataMainActivity.modificarArticulo(id, nombre, stock, categoria.getId());
+                Toast.makeText(Modificacion.this, "Artículo modificado con éxito", Toast.LENGTH_SHORT).show();
+                limpiarCampos();
+
+            } catch (Exception e) {
+                Toast.makeText(Modificacion.this, "Ocurrió un error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            }
         });
-
-=======
-         btnModificar.setOnClickListener(v -> {
-             int idArticulo = Integer.parseInt(txtIdArticulo.getText().toString());
-             String nuevoNombre = txtNombreProducto.getText().toString();
-             int nuevoStock = Integer.parseInt(txtStock.getText().toString());
-             int idCategoria = ((Categoria) spnCategoria.getSelectedItem()).getId();
-
-              dataMainActivity.modificarArticulo(idArticulo,nuevoNombre,nuevoStock,idCategoria);
-              limpiarCampos();
-
-         });
-
     }
 
+    // Método para limpiar los campos de texto después de la modificación
     private void limpiarCampos() {
         txtIdArticulo.setText("");
         txtNombreProducto.setText("");
         txtStock.setText("");
         spnCategoria.setSelection(0);
         txtIdArticulo.requestFocus();
->>>>>>> Stashed changes
+    }
+
+    // Método para verificar si un string contiene números
+    private boolean contieneNumeros(String str) {
+        return str.matches(".*\\d.*");
     }
 }
+
