@@ -18,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText edtId, edtNombreProducto, edtStock;
     private Spinner spnCategoria;
     private Button btnAgregar;
+    private Button btnAlta, btnModificacion, btnListado;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,6 +111,24 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        btnAlta = findViewById(R.id.btnAlta);
+        btnModificacion = findViewById(R.id.btnModificacion);
+        btnListado = findViewById(R.id.btnListado);
+
+         btnAlta.setOnClickListener(view -> {
+               Toast.makeText(this, "Ya estás en ALTA", Toast.LENGTH_SHORT).show();
+        });
+
+        btnModificacion.setOnClickListener(view -> {
+                   Intent intent = new Intent(MainActivity.this, Modificacion.class);
+            startActivity(intent);
+        });
+
+        btnListado.setOnClickListener(view -> {
+            Intent intent = new Intent(MainActivity.this, Listado.class);
+            startActivity(intent);
+        });
+
     }
 
     private void limpiarCampos() {
@@ -124,8 +143,8 @@ public class MainActivity extends AppCompatActivity {
         return str.matches(".*\\d.*");
     }
 
-    public void IraModificar(View view){
-        Intent i = new Intent(this, Modificacion.class);
-        startActivity(i);
-    }
+//    public void IraModificar(View view){
+//        Intent i = new Intent(this, Modificacion.class);
+//        startActivity(i);
+//    }
 }
