@@ -17,7 +17,7 @@ public class Modificacion extends AppCompatActivity {
     private EditText txtIdArticulo, txtNombreProducto, txtStock;
     private Button btnBuscar, btnModificar;
     private Spinner spnCategoria;
-
+    private Button btnAlta, btnModificacion, btnListado;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,6 +30,20 @@ public class Modificacion extends AppCompatActivity {
         spnCategoria = findViewById(R.id.spinnerCategoria);
         btnBuscar = findViewById(R.id.btnBuscar);
         btnModificar = findViewById(R.id.btnModificar);
+        btnAlta = findViewById(R.id.btnAlta);
+        btnModificacion = findViewById(R.id.btnModificacion);
+        btnListado = findViewById(R.id.btnListado);
+        btnAlta.setOnClickListener(view -> {
+            Intent intent = new Intent(Modificacion.this, MainActivity.class);
+            startActivity(intent);
+        });
+        btnModificacion.setOnClickListener(view -> {
+            Toast.makeText(this, "Ya estás en MODIFICACION", Toast.LENGTH_SHORT).show();
+        });
+        btnListado.setOnClickListener(view -> {
+            Intent intent = new Intent(Modificacion.this, Listado.class);
+            startActivity(intent);
+        });
 
         // Data management object
         DataMainActivity dataMainActivity = new DataMainActivity(this, txtNombreProducto, txtStock, btnBuscar, spnCategoria);

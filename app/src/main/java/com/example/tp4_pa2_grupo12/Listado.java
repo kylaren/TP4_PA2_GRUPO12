@@ -1,7 +1,9 @@
 package com.example.tp4_pa2_grupo12;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,6 +22,7 @@ public class Listado extends AppCompatActivity {
     private ArticuloAdapter adapter;
     private DataMainActivity dataMainActivity;
     private ArrayList<Articulo> articulos;
+    private Button btnAlta, btnModificacion, btnListado;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -37,6 +40,23 @@ public class Listado extends AppCompatActivity {
         // Inicializar DataMainActivity
         dataMainActivity = new DataMainActivity(this);
         loadArticulos();
+
+
+        btnAlta = findViewById(R.id.btnAlta);
+        btnModificacion = findViewById(R.id.btnModificacion);
+        btnListado = findViewById(R.id.btnListado);
+
+        btnAlta.setOnClickListener(view -> {
+            Intent intent = new Intent(Listado.this, MainActivity.class);
+            startActivity(intent);
+        });
+        btnModificacion.setOnClickListener(view -> {
+            Intent intent = new Intent(Listado.this, Modificacion.class);
+            startActivity(intent);
+        });
+        btnListado.setOnClickListener(view -> {
+            Toast.makeText(this, "Ya estás en Listado", Toast.LENGTH_SHORT).show();
+        });
     }
 
     private void loadArticulos() {
