@@ -1,15 +1,12 @@
 package com.example.tp4_pa2_grupo12.conexion;
 import android.content.Context;
-import android.os.Handler;
 import android.os.Looper;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.tp4_pa2_grupo12.conexion.DataDB;
 import com.example.tp4_pa2_grupo12.entidades.Articulo;
 import com.example.tp4_pa2_grupo12.entidades.Categoria;
 
@@ -33,6 +30,10 @@ public class DataMainActivity {
     // Lista para almacenar los artículos
     private List<Articulo> articulos;
 
+    public DataMainActivity(Context context) {
+        this.context = context;
+    }
+
     public DataMainActivity(Context context, Spinner spnCategoria) {
         this.context = context;
         this.spnCategoria = spnCategoria;
@@ -45,6 +46,46 @@ public class DataMainActivity {
         this.txtStock = txtStock;
         this.btnBuscar = btnBuscar;
         this.spnCategoria = spnCategoria;
+    }
+
+    public void getArticulos(DataCallback<ArrayList<Articulo>> callback) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
+            List<Articulo> listaArticulos = new ArrayList<>();
+            try {
+                Class.forName(DataDB.driver);
+                Connection con = DriverManager.getConnection(DataDB.urlMySQL, DataDB.user, DataDB.pass);
+                String query = "SELECT * FROM articulo";
+                PreparedStatement ps = con.prepareStatement(query);
+                ResultSet rs = ps.executeQuery();
+
+                while (rs.next()) {
+                    Articulo articulo = new Articulo();
+                    articulo.setId(rs.getInt("id"));
+                    articulo.setNombre(rs.getString("nombre"));
+                    articulo.setStock(rs.getInt("stock"));
+                    articulo.setIdCategoria(rs.getInt("idCategoria"));
+                    listaArticulos.add(articulo);
+                }
+
+                rs.close();
+                ps.close();
+                con.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            // Actualiza la UI en el hilo principal
+            new android.os.Handler(Looper.getMainLooper()).post(() -> {
+                callback.onSuccess((ArrayList<Articulo>) listaArticulos);
+            });
+        });
+    }
+
+    // Interfaz de retorno para la consulta
+    public interface DataCallback<T> {
+        void onSuccess(T result);
+        void onFailure(Exception e);
     }
 
 

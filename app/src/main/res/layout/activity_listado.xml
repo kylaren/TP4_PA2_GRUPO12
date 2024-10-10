@@ -1,70 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".Listado">
+    android:layout_height="match_parent">
 
-    <!-- Toolbar -->
     <include
         android:id="@+id/toolbar_layout"
         layout="@layout/toolbar_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"/>
 
-    <!-- RecyclerView para mostrar el listado -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="16dp"
+        android:padding="16dp"
         app:layout_constraintTop_toBottomOf="@id/toolbar_layout"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" >
-
-        <!-- Layout de cada ítem del RecyclerView -->
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="8dp">
-
-            <!-- Nombre del artículo -->
-            <TextView
-                android:id="@+id/tvNombreArticulo"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="Nombre del Artículo"
-                android:textStyle="bold"
-                android:textSize="16sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <!-- Stock del artículo -->
-            <TextView
-                android:id="@+id/tvStockArticulo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Stock: 10"
-                app:layout_constraintTop_toBottomOf="@id/tvNombreArticulo"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent" />
-
-            <!-- Categoría del artículo -->
-            <TextView
-                android:id="@+id/tvCategoriaArticulo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Categoría: Electrónica"
-                app:layout_constraintTop_toBottomOf="@id/tvNombreArticulo"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-    </androidx.recyclerview.widget.RecyclerView>
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
